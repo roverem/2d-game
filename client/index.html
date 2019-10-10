@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <title>PIXI + SOCKET.IO Template</title>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      canvas {
+        display:block;
+        background: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id ="game_canvas"></canvas>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="libs/pixi/pixi.js"></script>
+    <!--<script src="libs/pixi/pixi.min.js"></script>-->
+    <script src="libs/tween/Tween.js"></script>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

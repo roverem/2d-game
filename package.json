@@ -1,0 +1,24 @@
+{
+  "name": "pixi-socket-template",
+  "version": "1.0.0",
+  "description": "Template for Pixi.js + Socket.io project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roverem/node-pixi-socket-template.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/roverem/node-pixi-socket-template/issues"
+  },
+  "homepage": "https://github.com/roverem/node-pixi-socket-template#readme",
+  "dependencies": {
+    "esm": "^3.2.25",
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  }
+}
