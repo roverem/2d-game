@@ -15,16 +15,23 @@ APP.use('/', express.static("./client"));
 
 IO.on('connection', function(socket){
 	console.log("user connected");
-
 	let player = new Player(socket);
 	world.addPlayer(player);
-	
+
 	socket.on('disconnect', function(){
 		console.log("user disconnected");
 		world.removePlayer(socket.id);
 	});
 
-	socket.on( 'player_ready', player_ready.bind(this) );
+	//EVENTS
+
+	socket.on( 'player_ready', ()=>{
+		console.log("Player Ready")
+		world.playerReady(socket.id);
+	});
+
+
+	
 });
 
 HTTP.listen(process.env.PORT || 3000, function(){

@@ -27,8 +27,18 @@ export class World
         console.log(this.players);
     }
 
+    playerReady(socketId){
+        let player = this.players[socketId];
+
+        IO.to(`${socketId}`).emit("world_initial_data", {
+            width: this.width,
+            height: this.height
+        })
+        
+    }
+
     update(dt){
-        console.log("updating", dt);
+        //console.log("updating", dt);
 
         this.data = {
             x: Math.floor( Math.random() * this.width ),
