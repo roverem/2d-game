@@ -43,7 +43,7 @@ export class Game{
 
         let square = new PIXI.Graphics()
             .beginFill(0x000000)
-            .drawRect(0, 0, data.width, data.height)
+            .drawRect(0, 0, data.map_data.width, data.map_data.height)
             .endFill();
         this.arena.addChildAt( square, 0 );
     }

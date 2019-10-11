@@ -25,35 +25,53 @@ export class World
 
     addPlayer(socket){
         this.players[socket.id] = create_player("player_" + socket.id.toString(), socket, {x:0, y:0});
+        console.log("player added");
         
         this.gos.push( this.players[socket.id] );
 
         //EVENTS
-        socket.on( 'disconnect', this.removePlayer.bind(this, socket.id) );
+        socket.on( 'disconnect',    this.removePlayer.bind(this, socket.id) );
+        socket.on( 'player_move',   this.onPlayerMove.bind(this, socket.id) );
 
-        socket.on( 'player_ready', this.playerReady.bind(this, socket.id) );
+        console.log("events registered");
 
+        // Envía datos del jugador que se acaba de crear al resto de los jugadores.
+        let data = {};
+        this.players[socket.id].get_literal(data);
+        this.players[socket.id].get_stats(data);
 
-        socket.on( 'player_move', this.onPlayerMove.bind( this, socket.id ) );
+        console.log("player data stored", data);
 
-        console.log("player added");
+        // sending to all clients except sender
+        socket.broadcast.emit('player_connected', data);
+
+        console.log("data broadcasted to other players");
+
+        // cuando el jugador avisa que está listo, le envía sus datos
+        socket.on( 'player_ready',  this.playerReady.bind(this, socket.id, data) );
+
         console.log(this.players);
     }
 
     removePlayer(socketId){
         delete this.players[socketId];
-
         console.log("player removed", socketId);
     }
 
-    playerReady(socketId){
+    playerReady(socketId, player_data){
         //let player = this.players[socketId];
-
-        IO.to(`${socketId}`).emit("world_initial_data", {
+        
+        // Le envia el mapa (AUN NO HAY MAPA) y datos iniciales al nuevo jugador
+        let map_data = {
             width: this.width,
             height: this.height
+        }
+
+        IO.to(`${socketId}`).emit("world_initial_data", {
+            map_data: map_data,
+            player: player_data,
+            other_players: this.getOtherPlayers(socketId)
         })
-        
     }
 
     update(dt){
@@ -85,6 +103,19 @@ export class World
         }*/
     }
 
+    getOtherPlayers(socketId){
+        let players = [];
+        for (let other_id in this.players){
+            if ( other_id !== socketId ){
+                let data = {};
+                this.players[other_id].get_literal(data);
+                this.players[other_id].get_stats(data);
+                players.push(data);
+            }
+        }
+
+        return players;
+    }
 
     generatePlayerData(){
         let data = {

@@ -1,6 +1,17 @@
 import { Game } from "./js/game.js";
+import { SETTINGS } from "../../users/settings.js";
 
-export let SOCKET = io();
+console.log(SETTINGS);
+
+const options = {
+	"force new connection": true,
+	"reconnectionAttempts": 0,
+	"timeout": 10000,
+	"transports": ["websocket"],
+	"path": SETTINGS.path
+};
+
+export let SOCKET = io(SETTINGS.url, options);
 
 let _w = window.innerWidth;
 let _h = window.innerHeight;
