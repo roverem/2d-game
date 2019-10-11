@@ -7,7 +7,7 @@ import { Player } from './player';
 
 const APP = express();
 const HTTP = http.createServer(APP);
-const IO = io(HTTP);
+export const IO = io(HTTP);
 
 const world = new World(400, 400);
 
@@ -35,3 +35,16 @@ HTTP.listen(process.env.PORT || 3000, function(){
 function player_ready(data){
 	console.log(data);
 }
+
+const DT = 1/60;
+let ticks = 0;
+
+setInterval( ()=>{
+	world.update(DT);
+
+	ticks++;
+	if (ticks % 10 === 0){
+		world.emit();
+	}
+
+}, DT * 1000);
