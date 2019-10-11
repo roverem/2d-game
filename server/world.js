@@ -40,10 +40,29 @@ export class World
     update(dt){
         //console.log("updating", dt);
 
-        this.data = {
-            x: Math.floor( Math.random() * this.width ),
-            y: Math.floor( Math.random() * this.height )
+        //INPUT CHECK
+
+        //UPDATE POSITIONS
+
+        //CHECK COLLISIONS
+
+        //GENERATE DATA TO SEND TO PLAYERS
+        let data = {
+            players: {}
+        };
+        for (var sId in this.players){
+            data.players[sId] = {
+                position: this.players[sId].position
+            }
         }
+        this.data = data;
+    }
+
+    onPlayerMove(playerId, data){
+        let player = this.players[playerId];
+
+        player.position.x = data.x;
+        player.position.y = data.y;
     }
 
     emit(){

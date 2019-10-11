@@ -31,7 +31,10 @@ IO.on('connection', function(socket){
 	});
 
 
-	
+	socket.on( 'player_move', (data)=>{
+		console.log("player moved", data);
+		world.onPlayerMove( socket.id, data );
+	});
 });
 
 HTTP.listen(process.env.PORT || 3000, function(){

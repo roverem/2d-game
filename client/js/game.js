@@ -11,15 +11,26 @@ export class Game{
         //console.log(APP);
 
         this.arena = new PIXI.Container();
-        this.arena.x = APP.renderer.width / 2;
-        this.arena.y = APP.renderer.height / 2;
+        this.arena.x = Math.ceil( APP.renderer.width / 3 );
+        this.arena.y = Math.ceil( APP.renderer.height / 3 );
         
+        this.arena.interactive = true;
+        this.arena.buttonMode = true;
+        this.arena.addListener('pointerdown', (event)=>{
+            console.log(event.data.global);
+            let click_pos = {};
+            click_pos.x = event.data.global.x - this.arena.x;
+            click_pos.y = event.data.global.y - this.arena.y;
 
+            console.log(click_pos);
+
+            SOCKET.emit("player_move", click_pos )
+        });
         
         APP.stage.addChild(this.arena);
 
         this.t = new PIXI.Text("some text",{fontFamily: 'Arial', fontSize: 34, fill: 0xffffff, align: 'center'});
-        this.t.anchor.set(0.5, 0.5)
+        this.t.anchor.set(0.5, 0.5);
         this.arena.addChild(this.t);
 
 
@@ -35,12 +46,19 @@ export class Game{
             .drawRect(0, 0, data.width, data.height)
             .endFill();
         this.arena.addChildAt( square, 0 );
-        this.arena.pivot.x = data.width / 2;
-        this.arena.pivot.y = data.height / 2;
     }
 
     update(data){
-        this.t.x = data.x;
-        this.t.y = data.y;
+        /*this.t.x = data.x;
+        this.t.y = data.y;*/
+
+        //console.log(data);
+
+        for (var sId in data.players){
+            if (data.players[sId].position){
+                this.t.x = data.players[sId].position.x;
+                this.t.y = data.players[sId].position.y;
+            }
+        }
     }
 }
