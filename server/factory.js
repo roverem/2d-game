@@ -16,10 +16,10 @@ export function create_wall(x, y, w, h) {
     return gobj;
 }
 
-export function create_player(name, id, sp) {
-    let gobj = new Player(sp.x, sp.y);
+export function create_player(name, socket, spawn) {
+    let gobj = new Player(socket, spawn.x, spawn.y);
     gobj.username = name;
-    gobj.id = id;
+    //gobj.id = id;
 
     gobj.collider.material.bounciness = 0.0;
     gobj.collider.category = COLLIDER_PLAYER;

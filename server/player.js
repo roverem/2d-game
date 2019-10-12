@@ -22,8 +22,6 @@ export class Player extends GameObject {
         obj.vx = optimizeValue(this.rigidbody.velocity.x, 1);
         obj.vy = optimizeValue(this.rigidbody.velocity.y, 1);
         obj.id = this.id;
-        obj.name = this.username;
-        obj.purified_username = this.purified_username;
         return obj;
     }
 }

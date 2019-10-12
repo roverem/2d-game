@@ -1,7 +1,7 @@
 import { Game } from "./js/game.js";
 import { SETTINGS } from "../../users/settings.js";
 
-console.log(SETTINGS);
+//console.log(SETTINGS);
 
 const options = {
 	"force new connection": true,

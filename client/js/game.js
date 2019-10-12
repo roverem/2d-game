@@ -41,6 +41,8 @@ export class Game{
     _on_world_initial_data(data){
         console.log("_on_world_initial_data");
 
+        console.log(data);
+
         let square = new PIXI.Graphics()
             .beginFill(0x000000)
             .drawRect(0, 0, data.map_data.width, data.map_data.height)
