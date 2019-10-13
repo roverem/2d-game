@@ -11,18 +11,19 @@ export class Game{
         //console.log(APP);
 
         this.arena = new PIXI.Container();
-        this.arena.x = Math.ceil( APP.renderer.width / 3 );
-        this.arena.y = Math.ceil( APP.renderer.height / 3 );
+        this.arena.x = Math.ceil( APP.renderer.width / 2 );
+        this.arena.y = Math.ceil( APP.renderer.height / 2 );
         
         this.arena.interactive = true;
         this.arena.buttonMode = true;
-        this.arena.addListener('pointerdown', (event)=>{
-            console.log(event.data.global);
-            let click_pos = {};
-            click_pos.x = event.data.global.x - this.arena.x;
-            click_pos.y = event.data.global.y - this.arena.y;
 
-            console.log(click_pos);
+        this.arena.addListener('pointerdown', (event)=>{
+            
+            let click_pos = {};
+            click_pos.x = event.data.global.x - this.arena.x + this.arena.pivot.x;
+            click_pos.y = event.data.global.y - this.arena.y + this.arena.pivot.y;
+
+            console.log("click on square", click_pos);
 
             SOCKET.emit("player_move", click_pos )
         });
@@ -48,19 +49,25 @@ export class Game{
             .drawRect(0, 0, data.map_data.width, data.map_data.height)
             .endFill();
         this.arena.addChildAt( square, 0 );
+
+        this.arena.pivot.x = data.map_data.width / 2;
+        this.arena.pivot.y = data.map_data.height / 2;
     }
 
     update(data){
         /*this.t.x = data.x;
         this.t.y = data.y;*/
 
-        //console.log(data);
+        console.log(data[0].x);
 
-        for (var sId in data.players){
+        this.t.x = data[0].x;
+        this.t.y = data[0].y
+
+        /*for (var sId in data.players){
             if (data.players[sId].position){
                 this.t.x = data.players[sId].position.x;
                 this.t.y = data.players[sId].position.y;
             }
-        }
+        }*/
     }
 }

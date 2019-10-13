@@ -16,7 +16,7 @@ export class World
         this.gos = [];
         this.removeGos = [];
         
-        this.v2_diff = V2.create();
+        this.player_direction = V2.create();
 
         //this.add_collisions(this.map.props);
         //this.add_spawn_points(this.map.props);
@@ -30,7 +30,7 @@ export class World
         this.gos.push( this.players[socket.id] );
 
         //EVENTS
-        socket.on( 'disconnect',    this.removePlayer.bind(this, socket.id) );
+        socket.on( 'disconnect',    this.removePlayer.bind(this, socket) );
         socket.on( 'player_move',   this.onPlayerMove.bind(this, socket.id) );
 
         console.log("events registered");
@@ -47,15 +47,20 @@ export class World
 
         console.log("data broadcasted to other players");
 
-        // cuando el jugador avisa que está listo, le envía sus datos
+        // cuando el jugador avisa que está listo, el server le envía sus datos
         socket.on( 'player_ready',  this.playerReady.bind(this, socket.id, data) );
 
         console.log(this.players);
     }
 
-    removePlayer(socketId){
-        delete this.players[socketId];
-        console.log("player removed", socketId);
+    removePlayer(socket){
+        
+        //delete this.players[socket.id];
+
+        socket.broadcast.emit("player_disconnect", socket.id);
+        this.removeGos.push(socket.id);
+        //currentUsers--;
+        console.log("player removed", socket.id);
     }
 
     playerReady(socketId, player_data){
@@ -78,22 +83,54 @@ export class World
         //console.log("updating", dt);
 
         //INPUT CHECK
+        for (let id in this.players) {
+            // PLAYERS MOVEMENTS
+            
+            if (V2.length(this.players[id].rigidbody.new_direction) > 0) {
+                this.players[id].rigidbody.acceleration.x = this.players[id].rigidbody.new_direction.x * 200//FILES.config.gameplay.player_speed;
+                this.players[id].rigidbody.acceleration.y = this.players[id].rigidbody.new_direction.y * 200//FILES.config.gameplay.player_speed;
+            }
+        }
 
         //UPDATE POSITIONS
-        for (let id in this.players){
-            
-            this.players.x 
+        for (let i=0; i < this.gos.length; i++){
+            let gobj = this.gos[i];
+            gobj.update(dt);
+            update_physics(dt, gobj.transform, gobj.rigidbody, gobj.collider);
         }
 
         //CHECK COLLISIONS
+        for (let i = 0; i < this.gos.length; i++) {
+            let gobj = this.gos[i];
+            for (let j = 0; j < this.gos.length; j++) {
+                let othergobj = this.gos[j];
+                if (gobj !== othergobj) {
+                    check_collision(dt, gobj, othergobj);
+                }
+            }
+        }
+
+        for (let i = 0; i < this.removeGos.length; i++) {
+            this.gos.splice(this.gos.indexOf(this.players[this.removeGos[i]]), 1);
+            delete this.players[this.removeGos[i]];
+        }
+        this.removeGos.length = 0;
 
         //GENERATE DATA TO SEND TO PLAYERS
-        this.generatePlayerData();
+        this.generatePlayerData(dt);
     }
 
-    onPlayerMove(playerId, data){
+    onPlayerMove(playerId, click_pos){
+
+        console.log(click_pos)
+
         let player = this.players[playerId];
-        console.log(data);
+
+        this.player_direction.x = click_pos.x - player.transform.position.x;
+        this.player_direction.y = click_pos.y - player.transform.position.y;
+
+        
+        V2.normalize(this.player_direction, player.rigidbody.new_direction);
 /*        player.destination.x = data.x;
         player.destination.y = data.y;
 
@@ -117,20 +154,24 @@ export class World
         return players;
     }
 
-    generatePlayerData(){
-        let data = {
-            players: {}
-        };
-        for (var sId in this.players){
-            data.players[sId] = {
-                position: this.players[sId].position
+    generatePlayerData(dt){
+        this.data.length = 0;
+        for (let i = 0; i < this.gos.length; i++) {
+            let gobj = this.gos[i];
+            resolve_collisions(dt, gobj, this.onCollision.bind(this));
+
+            if (gobj.sendable) {
+                this.data.push(gobj.get_literal());
             }
         }
+    }
 
-        this.data = data;
+    onCollision(objA, objB, side) {
+        console.log(objA, objB, side);
     }
 
     emit(){
+        
         IO.emit("update", this.data);
     }
 }

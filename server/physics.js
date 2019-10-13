@@ -14,13 +14,15 @@ export function update_physics(dt, transform, rigidbody, collider) {
     rigidbody.velocity.x += rigidbody.acceleration.x * dt;
     rigidbody.velocity.y += rigidbody.acceleration.y * dt;
 
+    console.log(rigidbody.velocity)
+
     // Air resistance
     rigidbody.velocity.x -= rigidbody.velocity.x * dt * 5;
     rigidbody.velocity.y -= rigidbody.velocity.y * dt * 5;
 
     // Last direction
     let vel_length = Math.sqrt(rigidbody.velocity.x * rigidbody.velocity.x + rigidbody.velocity.y * rigidbody.velocity.y);
-
+    
     if (vel_length > 0) {
         rigidbody.last_direction.x = rigidbody.velocity.x / vel_length;
         rigidbody.last_direction.y = rigidbody.velocity.y / vel_length;
